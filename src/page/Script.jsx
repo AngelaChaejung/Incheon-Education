@@ -1,7 +1,8 @@
-import React from "react";
+import React, { useState } from "react";
 import { styled } from "styled-components";
 
 const Script = () => {
+  const [recording, setRecording] = useState("BEFORE");
   const openPopup = () => {
     const popupWidth = 300;
     const popupHeight = 200;
@@ -33,18 +34,15 @@ const Script = () => {
         “What is to become of us? How are we to feed our poor children?” “Don’t worry, husband,” answered his wife.
         “Early tomorrow morning we will take Hansel and Gretel deep into the forest. We will light a fire for them. I
         will give each of them one piece of bread, and then we will leave. They will not find their way home again, and
-        we shall be rid of them.” She said this because she was not their real mother. She was their stepmother and did
-        not like the children. “No,” said the man. “I cannot do that!” “Fool!” said the woman. “Should we all die of
-        hunger?” The stepmother kept saying this to the man, so he finally agreed with her. The two children had not
-        been able to sleep because they were hungry. They heard what their stepmother had said to their father. Gretel
-        cried sadly and whispered, “What can we do?” “Don’t cry, Gretel,” said Hansel.
+        we shall be rid of them.” She said this because she was not their real mother.
       </StScript.ContentPlace>
+      <StScript.BtnBlock>
+        {recording === "BEFORE" && <StScript.RoundBtn onClick={openPopup}>시작</StScript.RoundBtn>}
+        {recording === "AFTER" && <StScript.RoundBtn onClick={download}>다운로드</StScript.RoundBtn>}
+      </StScript.BtnBlock>
       {/* script 내용이 얼마나 길어질지 알아야함. 학생이 서있는 곳과 스크린의 거리에 맞는 글씨 크기를 이용해야함.
           필요한 내용 1. 스크립트 길이
           2. 학생이 서있는 단상과 스크린의 거리 */}
-
-      <StScript.RoundBtn onClick={openPopup}>시작</StScript.RoundBtn>
-      <button onClick={download}>다운로드</button>
     </StScript.Bg>
   );
 };
@@ -82,24 +80,33 @@ const StScript = {
   `,
   ContentPlace: styled.div`
     padding: 40px;
-    height: 90%;
+    height: fit-content;
     width: auto;
     background: #ffffff 0% 0%;
     box-shadow: 0px 0px 30px #26c4b121;
     border-radius: 20px;
     z-index: 4;
     justify-content: center;
-    margin: 59px 40px 71px 40px;
+    margin: 29px 40px 21px 40px;
     align-items: center;
     font: normal normal normal 30px/53px NanumSquareOTF;
     color: #222222;
   `,
   RoundBtn: styled.div`
     background-color: #26c4b1;
-    width: 70px;
-    height: 70px;
+    width: 60px;
+    height: 60px;
     border-radius: 999px;
     color: #fff;
     cursor: pointer;
+    justify-content: center;
+    align-items: center;
+    display: flex;
+    font-weight: 800;
+  `,
+  BtnBlock: styled.div`
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
   `,
 };

@@ -1,4 +1,5 @@
 import React, { useEffect, useRef } from "react";
+import RecordRTC from "recordrtc";
 import { styled } from "styled-components";
 
 const VideoProcessor = ({ setTakePlace, keyRgb }) => {
@@ -9,10 +10,10 @@ const VideoProcessor = ({ setTakePlace, keyRgb }) => {
   const backgrounds = ["/image/배경.jpg", "/image/bg.png", "/image/space.jpeg", "/image/trees.jpeg"];
   const [selectedBackground, setSelectedBackground] = React.useState(0);
   let recordedMediaUrl = null;
+  let mediaRecorder;
 
   useEffect(() => {
-    // Get user media (webcam stream)
-    navigator.mediaDevices.getUserMedia({ video: true }).then((stream) => {
+    navigator.mediaDevices.getUserMedia({ video: true, audio: true }).then((stream) => {
       videoRef.current.srcObject = stream;
     });
   }, []);
@@ -29,27 +30,31 @@ const VideoProcessor = ({ setTakePlace, keyRgb }) => {
       const imageData = ctx1.getImageData(0, 0, c1.width, c1.height);
       const data = imageData.data;
 
-      const tolerance = 60; // 허용 오차 범위
+      const tolerance = 60;
 
       for (let i = 0; i < data.length; i += 4) {
         const red = data[i];
         const green = data[i + 1];
         const blue = data[i + 2];
 
-        // 특정 범위 내의 색상(초록색)은 투명하게 처리합니다.
         if (
           Math.abs(red - keyRgb[0]) < tolerance &&
           Math.abs(green - keyRgb[1]) < tolerance &&
           Math.abs(blue - keyRgb[2]) < tolerance
         ) {
-          data[i + 3] = 0; // 투명화 처리
+          data[i + 3] = 0;
         }
       }
 
       ctx2.putImageData(imageData, 0, 0);
 
+      if (mediaRecorder) {
+        mediaRecorder.recordCanvas(c2Ref.current);
+      }
+
       setTimeout(timerCallback, 33);
     };
+
     video.addEventListener("play", () => {
       timerCallback();
     });
@@ -60,6 +65,26 @@ const VideoProcessor = ({ setTakePlace, keyRgb }) => {
       });
     };
   }, []);
+
+  const startRecording = () => {
+    const canvasStream = c2Ref.current.captureStream(30);
+    mediaRecorder = new RecordRTC(canvasStream, {
+      type: "canvas",
+      mimeType: "video/webm",
+      frameInterval: 33,
+    });
+
+    mediaRecorder.startRecording();
+  };
+
+  const stopRecording = () => {
+    if (mediaRecorder) {
+      mediaRecorder.stopRecording(() => {
+        const blob = mediaRecorder.getBlob();
+        recordedMediaUrl = URL.createObjectURL(blob);
+      });
+    }
+  };
 
   return (
     <>
@@ -87,6 +112,7 @@ const VideoProcessor = ({ setTakePlace, keyRgb }) => {
             style={{ backgroundImage: `url(${backgrounds[selectedBackground]})` }}
           ></StCanvas>
         </StContainer>
+
         {recordedMediaUrl && (
           <video controls>
             <source src={recordedMediaUrl} type="video/webm" />

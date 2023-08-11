@@ -38,8 +38,9 @@ const Cam = () => {
   }, [takePlace]);
   return (
     <>
-      {keyColor === "G" && <VideoProcessor setTakePlace={setTakePlace} keyRgb={[47, 178, 155]} />}
-      {keyColor === "B" && <VideoProcessor setTakePlace={setTakePlace} keyRgb={[]} />}
+      {keyColor === "G" && <VideoProcessor setTakePlace={setTakePlace} keyRgb={[47, 190, 210]} />}
+      {/* 47, 180, 210 */}
+      {keyColor === "B" && <VideoProcessor setTakePlace={setTakePlace} keyRgb={[36, 108, 239]} />}
       {/* 파란색 스크린을 현장에서 캠에서 인식되는 RGB에 따라 설정 */}
       {keyColor === "N" && <VideoProcessor setTakePlace={setTakePlace} keyRgb={[]} />}
     </>

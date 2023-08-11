@@ -17,4 +17,5 @@ export default Whole;
 const StWhole = styled.div`
   display: flex;
   flex-direction: row;
+  overflow: hidden;
 `;

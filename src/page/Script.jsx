@@ -1,10 +1,15 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { styled } from "styled-components";
+import useScreenRecorder from "../hooks/useScreenRecorder";
+import { useRecoilState } from "recoil";
+import { recordingAtom } from "../recoil/recordingAtom";
 
 const Script = () => {
-  const [recording, setRecording] = useState("BEFORE");
-
+  const { downloadVideo, stopRecording } = useScreenRecorder();
+  const [recording, setRecording] = useRecoilState(recordingAtom);
+  console.log(recording);
+  console.log(stopRecording);
   const openPopup = () => {
     const popupWidth = 300;
     const popupHeight = 300;
@@ -27,23 +32,23 @@ const Script = () => {
     setRecording("BEFORE");
   };
 
-  React.useEffect(() => {
-    const handleStorageChange = (event) => {
-      if (event.key === "recordedVideo") {
-        if (event.newValue) {
-          setRecording("AFTER");
-        } else {
-          setRecording("BEFORE");
-        }
-      }
-    };
-    // localStorage 변경을 감시하는 이벤트 리스너 추가
-    window.addEventListener("storage", handleStorageChange);
-    // 컴포넌트가 언마운트될 때 이벤트 리스너 제거
-    return () => {
-      window.removeEventListener("storage", handleStorageChange);
-    };
-  }, []);
+  // React.useEffect(() => {
+  //   const handleStorageChange = (event) => {
+  //     if (event.key === "recordedVideo") {
+  //       if (event.newValue) {
+  //         setRecording("AFTER");
+  //       } else {
+  //         setRecording("BEFORE");
+  //       }
+  //     }
+  //   };
+  //   // localStorage 변경을 감시하는 이벤트 리스너 추가
+  //   window.addEventListener("storage", handleStorageChange);
+  //   // 컴포넌트가 언마운트될 때 이벤트 리스너 제거
+  //   return () => {
+  //     window.removeEventListener("storage", handleStorageChange);
+  //   };
+  // }, []);
 
   return (
     <StScript.Bg>
@@ -51,17 +56,19 @@ const Script = () => {
         <StScript.HeaderText>스피치 주제</StScript.HeaderText>
       </StScript.Header>
       <StScript.ContentPlace>
-        Chapter 1 Famine Long ago, a poor woodcutter lived by a forest with his new wife and two children. The boy was
-        called Hansel and the girl was called Gretel. The family was always poor, but they had enough to eat. One year,
-        a famine came to the land. The woodcutter did not have enough food to feed his children. He said to his wife,
+        Famine Long ago, a poor woodcutter lived by a forest with his new wife and two children. The boy was called
+        Hansel and the girl was called Gretel. The family was always poor, but they had enough to eat. One year, a
+        famine came to the land. The woodcutter did not have enough food to feed his children. He said to his wife,
         “What is to become of us? How are we to feed our poor children?” “Don’t worry, husband,” answered his wife.
         “Early tomorrow morning we will take Hansel and Gretel deep into the forest. We will light a fire for them. I
         will give each of them one piece of bread, and then we will leave. They will not find their way home again, and
         we shall be rid of them.” She said this because she was not their real mother.
       </StScript.ContentPlace>
       <StScript.BtnBlock>
-        {recording === "BEFORE" && <StScript.RoundBtn onClick={openPopup}>시작</StScript.RoundBtn>}
-        {recording === "AFTER" && <StScript.RoundBtn onClick={download}>다운로드</StScript.RoundBtn>}
+        {recording}
+        <StScript.RoundBtn onClick={openPopup}>시작</StScript.RoundBtn>
+        <StScript.RoundBtn onClick={stopRecording}>완료</StScript.RoundBtn>
+        <StScript.RoundBtn onClick={download}>다운로드</StScript.RoundBtn>
       </StScript.BtnBlock>
       {/* script 내용이 얼마나 길어질지 알아야함. 학생이 서있는 곳과 스크린의 거리에 맞는 글씨 크기를 이용해야함.
           필요한 내용 1. 스크립트 길이
@@ -72,7 +79,7 @@ const Script = () => {
 
 export default Script;
 
-const StScript = {
+export const StScript = {
   Bg: styled.div`
     background-color: #fffef2;
     width: 50%;

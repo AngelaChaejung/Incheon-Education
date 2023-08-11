@@ -1,18 +1,20 @@
 import React, { useState } from "react";
+import { Link } from "react-router-dom";
 import { styled } from "styled-components";
 
 const Script = () => {
   const [recording, setRecording] = useState("BEFORE");
+
   const openPopup = () => {
     const popupWidth = 300;
-    const popupHeight = 200;
-    const left = window.innerWidth - popupWidth;
-    const top = window.innerHeight - popupHeight;
-
-    const options = `width=${popupWidth},height=${popupHeight},left=${left},top=${top},`;
-
-    window.open("/record", "popup", options);
+    const popupHeight = 300;
+    // 화면 중앙에 위치하도록 계산
+    const left = window.screenX + (window.outerWidth - popupWidth) / 2;
+    const top = window.screenY + (window.outerHeight - popupHeight) / 2;
+    const options = `width=${popupWidth},height=${popupHeight},left=${left},top=${top}`;
+    window.open("/record", "record pop-up", options);
   };
+
   const download = () => {
     const a = document.createElement("a");
     a.style.display = "none";
@@ -21,7 +23,28 @@ const Script = () => {
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
+    localStorage.removeItem("recordedVideo");
+    setRecording("BEFORE");
   };
+
+  React.useEffect(() => {
+    const handleStorageChange = (event) => {
+      if (event.key === "recordedVideo") {
+        if (event.newValue) {
+          setRecording("AFTER");
+        } else {
+          setRecording("BEFORE");
+        }
+      }
+    };
+    // localStorage 변경을 감시하는 이벤트 리스너 추가
+    window.addEventListener("storage", handleStorageChange);
+    // 컴포넌트가 언마운트될 때 이벤트 리스너 제거
+    return () => {
+      window.removeEventListener("storage", handleStorageChange);
+    };
+  }, []);
+
   return (
     <StScript.Bg>
       <StScript.Header>
@@ -61,7 +84,7 @@ const StScript = {
     flex-direction: column;
   `,
   Header: styled.div`
-    height: 77px;
+    height: 57px;
     background: #24a19c 0% 0%;
     display: flex;
     padding: 12px 0;

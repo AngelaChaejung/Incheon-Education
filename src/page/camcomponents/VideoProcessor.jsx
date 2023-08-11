@@ -73,12 +73,6 @@ const VideoProcessor = ({ setTakePlace, keyRgb }) => {
           crossOrigin="anonymous"
           style={{ display: "none" }}
         ></video>
-        {/* <div>
-        <button onClick={() => setSelectedBackground(0)}>분홍색</button>
-        <button onClick={() => setSelectedBackground(1)}>바다</button>
-        <button onClick={() => setSelectedBackground(2)}>우주</button>
-        <button onClick={() => setSelectedBackground(3)}>나무</button>
-      </div> */}
         <canvas id="c1" ref={c1Ref} width="400" height="300" style={{ display: "none" }}></canvas>
         <StContainer
           onDoubleClick={() => {

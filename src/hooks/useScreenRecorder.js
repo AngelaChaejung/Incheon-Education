@@ -1,7 +1,8 @@
 import { useState, useRef } from "react";
 import { useRecoilState } from "recoil";
-import RecordRTC from "recordrtc";
+import RecordRTC, { MediaStreamRecorder } from "recordrtc";
 import { recordingAtom } from "../recoil/recordingAtom";
+import { mediaStreamAtom } from "../recoil/mediaStreamAtom";
 
 function useScreenRecorder() {
   const [recording, setRecording] = useRecoilState(recordingAtom);
@@ -19,7 +20,8 @@ function useScreenRecorder() {
       });
       // 파일 형식 여기서 설정하는데, mp4로 하려했으나 mp4로 하면 파일이 열리지가 않음. 우선 webm형태로.
       const mediaRecorder = RecordRTC(mediaStream, {
-        mimeType: "video/webm;codecs=vp9",
+        mimeType: "video/webm",
+        recorderType: MediaStreamRecorder,
       });
       // 녹화가 시작되면 mediaStreamRef에 데이터 저장
       mediaRecorder.ondataavailable = (event) => {
@@ -60,6 +62,7 @@ function useScreenRecorder() {
   const stopRecording = () => {
     console.log("작동.");
     if (mediaRecorderRef.current) {
+      console.log("mediaRecorderRef", mediaRecorderRef.current);
       mediaRecorderRef.current.stopRecording(() => {
         const blob = mediaRecorderRef.current.getBlob();
         const videoUrl = URL.createObjectURL(blob);

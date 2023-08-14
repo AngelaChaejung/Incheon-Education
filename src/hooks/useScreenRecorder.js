@@ -2,7 +2,6 @@ import { useState, useRef } from "react";
 import { useRecoilState } from "recoil";
 import RecordRTC, { MediaStreamRecorder } from "recordrtc";
 import { recordingAtom } from "../recoil/recordingAtom";
-import { mediaStreamAtom } from "../recoil/mediaStreamAtom";
 
 function useScreenRecorder() {
   const [recording, setRecording] = useRecoilState(recordingAtom);
@@ -15,7 +14,9 @@ function useScreenRecorder() {
   const startRecording = async () => {
     try {
       const mediaStream = await navigator.mediaDevices.getDisplayMedia({
-        video: true,
+        video: {
+          cursor: "never", // 마우스 커서 녹화 안 함
+        },
         audio: true,
       });
       // 파일 형식 여기서 설정하는데, mp4로 하려했으나 mp4로 하면 파일이 열리지가 않음. 우선 webm형태로.

@@ -97,6 +97,7 @@ const VideoProcessor = ({ setTakePlace, keyRgb }) => {
           controls
           crossOrigin="anonymous"
           style={{ display: "none" }}
+          muted
         ></video>
         <canvas id="c1" ref={c1Ref} width="400" height="300" style={{ display: "none" }}></canvas>
         <StContainer

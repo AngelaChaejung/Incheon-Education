@@ -5,9 +5,21 @@ import { useRecoilState } from "recoil";
 import { recordingAtom } from "../recoil/recordingAtom";
 
 const Script = () => {
+  const mock = {
+    speechTitle: "샘플 스피치 주제",
+    speechScript: ` Famine Long ago, a poor woodcutter lived by a forest with his new wife and two children. The boy was called
+        Hansel and the girl was called Gretel. The family was always poor, but they had enough to eat. One year, a
+        famine came to the land. The woodcutter did not have enough food to feed his children. He said to his wife,
+        “What is to become of us? How are we to feed our poor children?” “Don’t worry, husband,” answered his wife.
+        “Early tomorrow morning we will take Hansel and Gretel deep into the forest. We will light a fire for them. I
+        will give each of them one piece of bread, and then we will leave. They will not find their way home again, and
+        we shall be rid of them.” She said this because she was not their real mother.`,
+  };
   const { downloadVideo, stopRecording } = useScreenRecorder();
   const [recording, setRecording] = useRecoilState(recordingAtom);
-  console.log(recording);
+  const audioUrl = "/sound/sample.mp3";
+  const [audio] = useState(new Audio(audioUrl));
+  const [isPlaying, setIsPlaying] = useState(false);
 
   const openPopup = () => {
     const popupWidth = 340;
@@ -18,7 +30,24 @@ const Script = () => {
     const options = `width=${popupWidth},height=${popupHeight},left=${left},top=${top}`;
     window.open("/record", "record pop-up", options);
   };
+  /** 스크립트 클릭시 음원이 재생되게하는 함수 */
+  const handleTogglePlayback = () => {
+    if (isPlaying) {
+      audio.pause();
+    } else {
+      audio.play();
+    }
+    setIsPlaying(!isPlaying);
+  };
 
+  /** 사운드가 재생되고 있을 때 다시 클릭하면 사운드가 중지됨 */
+  const handleStop = () => {
+    audio.pause();
+    audio.currentTime = 0;
+    setIsPlaying(false);
+  };
+
+  /** 일시적으로 localStorage에 저장해둔 녹화영상을 파일로 만들어 저장하는 함수 */
   const download = () => {
     const a = document.createElement("a");
     a.style.display = "none";
@@ -52,16 +81,10 @@ const Script = () => {
   return (
     <StScript.Bg>
       <StScript.Header>
-        <StScript.HeaderText>스피치 주제</StScript.HeaderText>
+        <StScript.HeaderText>{mock.speechTitle}</StScript.HeaderText>
       </StScript.Header>
-      <StScript.ContentPlace>
-        Famine Long ago, a poor woodcutter lived by a forest with his new wife and two children. The boy was called
-        Hansel and the girl was called Gretel. The family was always poor, but they had enough to eat. One year, a
-        famine came to the land. The woodcutter did not have enough food to feed his children. He said to his wife,
-        “What is to become of us? How are we to feed our poor children?” “Don’t worry, husband,” answered his wife.
-        “Early tomorrow morning we will take Hansel and Gretel deep into the forest. We will light a fire for them. I
-        will give each of them one piece of bread, and then we will leave. They will not find their way home again, and
-        we shall be rid of them.” She said this because she was not their real mother.
+      <StScript.ContentPlace onClick={isPlaying ? handleStop : handleTogglePlayback}>
+        {mock.speechScript}
       </StScript.ContentPlace>
       <StScript.BtnBlock>
         {recording === "BEFORE" && <StScript.RoundBtn onClick={openPopup}>시작</StScript.RoundBtn>}
@@ -106,6 +129,7 @@ export const StScript = {
     padding-left: 60px;
   `,
   ContentPlace: styled.div`
+    cursor: pointer;
     padding: 40px;
     height: fit-content;
     width: auto;
